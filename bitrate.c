@@ -198,7 +198,7 @@ int set_bitrates(struct nl_msg *msg,
 		 enum nl80211_attrs attr)
 {
 	struct nlattr *nl_rates, *nl_band;
-	int i, ret = 0;
+	int i, ret = 0, index = 0;
 	bool have_legacy_24 = false, have_legacy_5 = false;
 	uint8_t legacy_24[32], legacy_5[32];
 	int n_legacy_24 = 0, n_legacy_5 = 0;
@@ -257,7 +257,24 @@ int set_bitrates(struct nl_msg *msg,
 		S_EHT_LTF,
 	} parser_state = S_NONE;
 
-	for (i = 0; i < argc; i++) {
+	if (argc > 1) {
+		if (!strcmp(argv[0], "-l")) {
+			unsigned int link_id;
+			char *endptr;
+
+			link_id = strtol(argv[1], &endptr, 10);
+			if (*endptr)
+				return 1;
+
+			if (link_id > 15)
+				return 1;
+
+			nla_put_u8(msg, NL80211_ATTR_MLO_LINK_ID, link_id);
+			index = 2;
+		}
+	}
+
+	for (i = index; i < argc; i++) {
 		char *end;
 		double tmpd;
 		long tmpl;
