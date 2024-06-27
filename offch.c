@@ -14,6 +14,26 @@ static int offchannel(struct nl80211_state *state,
 		      enum id_input id)
 {
 	char *end;
+	unsigned int link_id;
+
+	if (argc < 2)
+		return 1;
+
+	/* link id */
+	if (!strcmp(argv[0], "-l")) {
+		link_id = strtol(argv[1], &end, 10);
+		if (*end)
+			return 1;
+
+		if (link_id >= IEEE80211_MLD_MAX_NUM_LINKS) {
+			printf("link id %d exceeds max number of links\n",
+				link_id);
+			return 2;
+		}
+		NLA_PUT_U8(msg, NL80211_ATTR_MLO_LINK_ID, link_id);
+		argv += 2;
+		argc -= 2;
+	}
 
 	if (argc < 2)
 		return 1;
@@ -42,6 +62,6 @@ static int offchannel(struct nl80211_state *state,
 	return -ENOSPC;
 }
 
-TOPLEVEL(offchannel, "<freq> <duration>", NL80211_CMD_REMAIN_ON_CHANNEL, 0,
-	 CIB_NETDEV, offchannel,
+TOPLEVEL(offchannel, "[-l link_id] <freq> <duration>",
+	 NL80211_CMD_REMAIN_ON_CHANNEL, 0, CIB_NETDEV, offchannel,
 	 "Leave operating channel and go to the given channel for a while.");
