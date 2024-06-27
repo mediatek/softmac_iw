@@ -121,4 +121,7 @@ enum elem_id_ext {
 #define WLAN_CIPHER_SUITE_BIP_GMAC_256  SUITE(0x000FAC, 12)
 #define WLAN_CIPHER_SUITE_BIP_CMAC_256  SUITE(0x000FAC, 13)
 
+/* multi-link device */
+#define IEEE80211_MLD_MAX_NUM_LINKS    15
+
 #endif /* __IEEE80211 */
