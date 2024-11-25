@@ -930,6 +930,9 @@ next:
 					printf("\t\t\tRTS Threshold: %d\n",
 					       nla_get_u32(radio_prop));
 					break;
+				case NL80211_WIPHY_RADIO_ATTR_ANTENNA_MASK:
+					printf("\t\t\tantenna_mask: 0x%08x\n", nla_get_u32(radio_prop));
+					break;
 				default:
 					printf("\t\t\t* <failed to parse>\n");
 				}
