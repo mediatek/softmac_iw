@@ -252,6 +252,7 @@ void print_eht_operation(const uint8_t *ie, int len);
 void print_eht_info(struct nlattr *nl_iftype, int band);
 void print_s1g_capability(const uint8_t *caps);
 
+int parse_radio_list(char *str, struct nl_msg *msg);
 char *channel_width_name(enum nl80211_chan_width width);
 const char *iftype_name(enum nl80211_iftype iftype);
 void print_iftype_list(const char *name, const char *pfx, struct nlattr *attr);
