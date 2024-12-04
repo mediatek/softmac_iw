@@ -226,7 +226,7 @@ nla_put_failure:
 	return 1;
 }
 
-static int parse_radio_list(char *str, struct nl_msg *msg)
+int parse_radio_list(char *str, struct nl_msg *msg)
 {
 	unsigned int mask = 0;
 	unsigned long id;

@@ -388,6 +388,7 @@ static int handle_scan(struct nl80211_state *state,
 		SSID,
 		MESHID,
 		DURATION,
+		RADIOS,
 		DONE,
 	} parse = NONE;
 	int freq;
@@ -454,6 +455,9 @@ static int handle_scan(struct nl80211_state *state,
 			} else if (strcmp(argv[i], "duration") == 0) {
 				parse = DURATION;
 				break;
+			} else if (strcmp(argv[i], "radios") == 0) {
+				parse = RADIOS;
+				break;
 			}
 			/* fall through - this is an error */
 		case DONE:
@@ -493,6 +497,11 @@ static int handle_scan(struct nl80211_state *state,
 			break;
 		case DURATION:
 			duration = strtoul(argv[i], &eptr, 10);
+			parse = NONE;
+			break;
+		case RADIOS:
+			if (parse_radio_list(argv[i], msg))
+				goto nla_put_failure;
 			parse = NONE;
 			break;
 		}
@@ -2844,7 +2853,7 @@ static int handle_scan_combined(struct nl80211_state *state,
 	dump_argv[0] = argv[0];
 	return handle_cmd(state, id, dump_argc, dump_argv);
 }
-TOPLEVEL(scan, "[-u] [freq <freq>*] [duration <dur>] [ies <hex as 00:11:..>] [meshid <meshid>] [lowpri,flush,ap-force,duration-mandatory] [randomise[=<addr>/<mask>]] [ssid <ssid>*|passive]", 0, 0,
+TOPLEVEL(scan, "[-u] [freq <freq>*] [duration <dur>] [ies <hex as 00:11:..>] [meshid <meshid>] [lowpri,flush,ap-force,duration-mandatory] [randomise[=<addr>/<mask>]] [ssid <ssid>*|passive] [radios all|<id>[,<id>...]]", 0, 0,
 	 CIB_NETDEV, handle_scan_combined,
 	 "Scan on the given frequencies and probe for the given SSIDs\n"
 	 "(or wildcard if not given) unless passive scanning is requested.\n"
@@ -2854,7 +2863,7 @@ COMMAND(scan, dump, "[-u]",
 	NL80211_CMD_GET_SCAN, NLM_F_DUMP, CIB_NETDEV, handle_scan_dump,
 	"Dump the current scan results. If -u is specified, print unknown\n"
 	"data in scan results.");
-COMMAND(scan, trigger, "[freq <freq>*] [duration <dur>] [ies <hex as 00:11:..>] [meshid <meshid>] [lowpri,flush,ap-force,duration-mandatory,coloc] [randomise[=<addr>/<mask>]] [ssid <ssid>*|passive]",
+COMMAND(scan, trigger, "[freq <freq>*] [duration <dur>] [ies <hex as 00:11:..>] [meshid <meshid>] [lowpri,flush,ap-force,duration-mandatory,coloc] [randomise[=<addr>/<mask>]] [ssid <ssid>*|passive] [radios all|<id>[,<id>...]]",
 	NL80211_CMD_TRIGGER_SCAN, 0, CIB_NETDEV, handle_scan,
 	 "Trigger a scan on the given frequencies with probing for the given\n"
 	 "SSIDs (or wildcard if not given) unless passive scanning is requested.\n"
